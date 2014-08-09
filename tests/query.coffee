@@ -1,0 +1,104 @@
+assert = require('chai').assert
+mysql = require('../lib/index')(user:process.env.MYSQL_USER,host:process.env.MYSQL_HOST,password:process.env.MYSQL_PASSWORD,connectionLimit:1)
+Connection = mysql.connection
+
+suite 'Query', ->
+    test 'select', (done)->
+        q =  new Connection
+        q.q q:'SELECT 1 AS k',cb:(err,data)->
+            assert.equal data[0].k,1
+            q.end done
+                    
+    test 'lock1', (done)->
+        q =  new Connection 
+        q.q q:'SELECT 1 AS k',lock:1,cb:(err,data)->
+            assert.equal data[0].k,1
+            q.end done
+    
+    test 'lock2', (done)->
+        q =  new Connection
+        q.q q:'SELECT 1 AS k',lock:2,cb:(err,data)->
+            assert.equal data[0].k,1
+            q.end done
+                
+    test 'stream',(done)->
+        q =  new Connection
+        result = 0
+        stream = (row)->
+            result = row.k
+        
+        q.q q:'SELECT 1 AS k',lock:2,stream:stream,cb:()->
+            assert.equal 1,result
+            q.end done
+                
+    test 'end', (done)->
+        q =  new Connection
+        q.q q:'SELECT 1 AS k',cb:(err,data)->
+            assert.equal data[0].k,1
+            q.end -> q.end done
+            
+    
+    test 'commit', (done)->
+        q =  new Connection
+        q.begin ->
+            q.q q:'SELECT 1 AS k',cb:(err,data)->
+                assert.equal data[0].k,1
+                q.commit -> q.end done
+    
+
+    test 'error', (done)->
+        q =  new Connection
+        q.on 'error', ->
+        q.q q:'SELECT 1 AS k FROM no_table',cb:(err,data)->
+            assert.equal err.code,'ER_NO_DB_ERROR'
+            done()
+           
+
+    test 'streamerror',(done)->
+        q =  new Connection
+        q.on 'error',->
+        result = 0
+        stream = (row)->
+            result = row.k
+        
+        q.q q:'SELECT 1 AS k FROM no_table',lock:2,stream:stream,cb:(err)->
+            assert.equal err.code,'ER_NO_DB_ERROR'
+            done()
+     
+    test 'batch',(done)->
+        q =  new Connection
+        queries = []
+        queries.push q:'SELECT 1 AS k'
+        queries.push q:'SELECT 2 AS k'
+        q.batch queries,(err,data)->
+            assert.equal data[0][0].k,1
+            assert.equal data[1][0].k,2
+            q.end done
+          
+    test 'batcherror',(done)->
+        q =  new Connection
+        queries = []
+        q.on 'error',->
+        q.batch queries,(err,data)->
+            assert.equal err,'Cannot batch 0 queries'
+            done()
+            
+    test 'batcherror2',(done)->
+        q =  new Connection
+        q.on 'error',->
+        queries = []
+        queries.push q:'SELECT 1 AS k FROM no_table'
+        q.batch queries,(err,data)->
+            assert.equal err.code,'ER_NO_DB_ERROR'
+            done()
+            
+    test 'queue',(done)->
+        q = new Connection
+        q2 = new Connection
+        q.on 'queue',(qlen)->
+            assert.equal qlen,1
+            q2.end -> q.end done
+        q2.begin ->
+            q.begin()
+            
+            
