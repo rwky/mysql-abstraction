@@ -1,5 +1,6 @@
 mysql = require 'mysql'
 events = require 'events'
+deprecate =  require('depd')('mysql-abstraction')
 
 module.exports = (settings)->
         pool = mysql.createPool settings
@@ -11,12 +12,11 @@ module.exports = (settings)->
                 @connection = null
                 
             connect: (cb)->
-                #Until https://github.com/felixge/node-mysql/pull/716 is merged in
-                #this is a hack to find out if a connection is queued
-                #I don't want to keep maintaining my own fork for a minor code change
-                process.nextTick =>
-                    if pool._connectionQueue.length
-                        @emit 'queue',pool._connectionQueue.length
+                #backwards compatible queue event
+                pool.setMaxListeners 0
+                pool.on 'enqueue',=>
+                    if @listeners('queue').length then deprecate("The 'queue' event for 'connection' is deprecated, please listen to the 'enqueue' event of 'pool', to obtain the queue length use 'pool._connectionQueue.length'")
+                    @emit 'queue',pool._connectionQueue.length
                 
                 pool.getConnection (err,connection)=>
                     @connection = connection

@@ -95,8 +95,17 @@ suite 'Query', ->
     test 'queue',(done)->
         q = new Connection
         q2 = new Connection
-        q.on 'queue',(qlen)->
+        q.once 'queue',(qlen)->
             assert.equal qlen,1
+            q2.end -> q.end done
+        q2.begin ->
+            q.begin()
+            
+    test 'enqueue',(done)->
+        q = new Connection
+        q2 = new Connection
+        mysql.pool.once 'enqueue',->
+            assert.equal mysql.pool._connectionQueue.length,1
             q2.end -> q.end done
         q2.begin ->
             q.begin()

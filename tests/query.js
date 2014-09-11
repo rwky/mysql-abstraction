@@ -162,12 +162,26 @@ suite('Query', function() {
       return done();
     });
   });
-  return test('queue', function(done) {
+  test('queue', function(done) {
     var q, q2;
     q = new Connection;
     q2 = new Connection;
-    q.on('queue', function(qlen) {
+    q.once('queue', function(qlen) {
       assert.equal(qlen, 1);
+      return q2.end(function() {
+        return q.end(done);
+      });
+    });
+    return q2.begin(function() {
+      return q.begin();
+    });
+  });
+  return test('enqueue', function(done) {
+    var q, q2;
+    q = new Connection;
+    q2 = new Connection;
+    mysql.pool.once('enqueue', function() {
+      assert.equal(mysql.pool._connectionQueue.length, 1);
       return q2.end(function() {
         return q.end(done);
       });
