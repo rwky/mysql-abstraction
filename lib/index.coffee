@@ -10,19 +10,27 @@ module.exports = (settings)->
             constructor: (@autoStartTransaction=false)->
                 @hasTransaction = false
                 @connection = null
-                
+                @log = false
+                @logs = []
+                    
+            _reset: ->
+                @hasTransaction = false
+                @connection = null
+                @logs = []
+                @_returnConnection = null
+                    
             connect: (cb)->
-                #backwards compatible queue event
-                pool.setMaxListeners 0
-                pool.on 'enqueue',=>
-                    if @listeners('queue').length then deprecate("The 'queue' event for 'connection' is deprecated, please listen to the 'enqueue' event of 'pool', to obtain the queue length use 'pool._connectionQueue.length'")
-                    @emit 'queue',pool._connectionQueue.length
-                
-                pool.getConnection (err,connection)=>
+                if @listeners('queue').length
+                    deprecate("The 'queue' event for 'connection' is deprecated, please listen to the 'enqueue' event of 'pool', to obtain the queue length use 'pool._connectionQueue.length'")
+                    process.nextTick =>
+                        if pool._connectionQueue.length
+                            @emit 'queue',pool._connectionQueue.length
+                @_returnConnection = (err,connection)=>
                     @connection = connection
                     @lastQuery = null
                     if err then @emit 'error',err
                     cb(err)
+                pool.getConnection @_returnConnection
                 
             error: (err,cb)->
                 if settings.logErrors?
@@ -43,7 +51,8 @@ module.exports = (settings)->
                     
                 
             q: (ops)->
-                
+                if @log
+                    @logs.push ops
                 query = ()=>
                     ops.cb = ops.cb || ops.callback || ->
                     ops.params = ops.params || []
@@ -89,16 +98,20 @@ module.exports = (settings)->
                 
             end: (cb)->
                 if !@connection?
+                    index = pool._connectionQueue.indexOf @_returnConnection
+                    if index isnt -1
+                        pool._connectionQueue.splice index,1
+                    @_reset()
                     if cb? then process.nextTick cb
-                    return
-                if @hasTransaction
+                else if @hasTransaction
                     @q q:'COMMIT',cb:(err)=>
                         @connection.release()
-                        @connection = null
+                        @_reset()
                         cb(err) if cb?
                 else
                     @connection.release()
-                    @connection = null
+                    @_reset()
+
                     process.nextTick cb if cb?
                     
             batch: (queries, cb) ->

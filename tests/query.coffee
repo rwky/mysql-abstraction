@@ -95,19 +95,23 @@ suite 'Query', ->
     test 'queue',(done)->
         q = new Connection
         q2 = new Connection
-        q.once 'queue',(qlen)->
+        q.on 'queue',(qlen)->
             assert.equal qlen,1
-            q2.end -> q.end done
-        q2.begin ->
-            q.begin()
+            q2.end()
+        q2.begin -> q.begin -> q.end done
             
     test 'enqueue',(done)->
         q = new Connection
         q2 = new Connection
         mysql.pool.once 'enqueue',->
             assert.equal mysql.pool._connectionQueue.length,1
-            q2.end -> q.end done
-        q2.begin ->
-            q.begin()
+            q.end -> q2.end done
+        q2.begin -> q.begin -> throw Error("Shouldn't be called")
             
+    test 'logs',(done)->
+        q =  new Connection
+        q.log = true
+        q.q q:'SELECT 1 AS k',cb:(err,data)->
+            assert.equal q.logs[0].q,'SELECT 1 AS k'
+            q.end done
             
