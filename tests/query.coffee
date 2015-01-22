@@ -1,117 +1,131 @@
 assert = require('chai').assert
-mysql = require('../lib/index')(user:process.env.MYSQL_USER,host:process.env.MYSQL_HOST,password:process.env.MYSQL_PASSWORD,connectionLimit:1)
+mysql = require('../lib/index')({
+    user: process.env.MYSQL_USER, host: process.env.MYSQL_HOST,
+    password: process.env.MYSQL_PASSWORD, connectionLimit: 1
+    })
 Connection = mysql.connection
 
 suite 'Query', ->
-    test 'select', (done)->
+    test 'select', (done) ->
         q =  new Connection
-        q.q q:'SELECT 1 AS k',cb:(err,data)->
-            assert.equal data[0].k,1
+        q.q q: 'SELECT 1 AS k', cb: (err, data) ->
+            assert.equal data[0].k, 1
             q.end done
                     
-    test 'lock1', (done)->
+    test 'lock1', (done) ->
         q =  new Connection 
-        q.q q:'SELECT 1 AS k',lock:1,cb:(err,data)->
-            assert.equal data[0].k,1
+        q.q q: 'SELECT 1 AS k', lock: 1, cb: (err, data) ->
+            assert.equal data[0].k, 1
             q.end done
     
-    test 'lock2', (done)->
+    test 'lock2', (done) ->
         q =  new Connection
-        q.q q:'SELECT 1 AS k',lock:2,cb:(err,data)->
-            assert.equal data[0].k,1
+        q.q q: 'SELECT 1 AS k', lock: 2, cb: (err, data) ->
+            assert.equal data[0].k, 1
             q.end done
                 
-    test 'stream',(done)->
+    test 'stream', (done) ->
         q =  new Connection
         result = 0
-        stream = (row)->
+        stream = (row) ->
             result = row.k
         
-        q.q q:'SELECT 1 AS k',lock:2,stream:stream,cb:()->
-            assert.equal 1,result
+        q.q q: 'SELECT 1 AS k', lock: 2, stream: stream, cb: ->
+            assert.equal 1, result
             q.end done
                 
-    test 'end', (done)->
+    test 'end', (done) ->
         q =  new Connection
-        q.q q:'SELECT 1 AS k',cb:(err,data)->
-            assert.equal data[0].k,1
+        q.q q: 'SELECT 1 AS k', cb: (err, data) ->
+            assert.equal data[0].k, 1
             q.end -> q.end done
             
     
-    test 'commit', (done)->
+    test 'commit', (done) ->
         q =  new Connection
         q.begin ->
-            q.q q:'SELECT 1 AS k',cb:(err,data)->
-                assert.equal data[0].k,1
+            q.q q: 'SELECT 1 AS k', cb: (err, data) ->
+                assert.equal data[0].k, 1
                 q.commit -> q.end done
     
 
-    test 'error', (done)->
+    test 'error', (done) ->
         q =  new Connection
-        q.on 'error', ->
-        q.q q:'SELECT 1 AS k FROM no_table',cb:(err,data)->
-            assert.equal err.code,'ER_NO_DB_ERROR'
+        q.on 'error', -> null
+        q.q q: 'SELECT 1 AS k FROM no_table', cb: (err, data) ->
+            assert.equal err.code, 'ER_NO_DB_ERROR'
             done()
            
 
-    test 'streamerror',(done)->
+    test 'streamerror', (done) ->
         q =  new Connection
-        q.on 'error',->
+        q.on 'error', -> null
         result = 0
-        stream = (row)->
+        stream = (row) ->
             result = row.k
         
-        q.q q:'SELECT 1 AS k FROM no_table',lock:2,stream:stream,cb:(err)->
-            assert.equal err.code,'ER_NO_DB_ERROR'
+        q.q q: 'SELECT 1 AS k FROM no_table', lock: 2, stream: stream, cb: (err) ->
+            assert.equal err.code, 'ER_NO_DB_ERROR'
             done()
      
-    test 'batch',(done)->
+    test 'batch', (done) ->
         q =  new Connection
         queries = []
-        queries.push q:'SELECT 1 AS k'
-        queries.push q:'SELECT 2 AS k'
-        q.batch queries,(err,data)->
-            assert.equal data[0][0].k,1
-            assert.equal data[1][0].k,2
+        queries.push q: 'SELECT 1 AS k'
+        queries.push q: 'SELECT 2 AS k'
+        q.batch queries, (err, data) ->
+            assert.equal data[0][0].k, 1
+            assert.equal data[1][0].k, 2
             q.end done
           
-    test 'batcherror',(done)->
+    test 'batcherror', (done) ->
         q =  new Connection
         queries = []
-        q.on 'error',->
-        q.batch queries,(err,data)->
-            assert.equal err,'Cannot batch 0 queries'
+        q.on 'error', -> null
+        q.batch queries, (err, data) ->
+            assert.equal err, 'Cannot batch 0 queries'
             done()
             
-    test 'batcherror2',(done)->
+    test 'batcherror2', (done) ->
         q =  new Connection
-        q.on 'error',->
+        q.on 'error', -> null
         queries = []
-        queries.push q:'SELECT 1 AS k FROM no_table'
-        q.batch queries,(err,data)->
-            assert.equal err.code,'ER_NO_DB_ERROR'
+        queries.push q: 'SELECT 1 AS k FROM no_table'
+        q.batch queries, (err, data) ->
+            assert.equal err.code, 'ER_NO_DB_ERROR'
             done()
             
-    test 'queue',(done)->
+    test 'queue', (done) ->
         q = new Connection
         q2 = new Connection
-        q.on 'queue',(qlen)->
-            assert.equal qlen,1
+        q.on 'queue', (qlen) ->
+            assert.equal qlen, 1
             q2.end()
         q2.begin -> q.begin -> q.end done
             
-    test 'enqueue',(done)->
+    test 'enqueue', (done) ->
         q = new Connection
         q2 = new Connection
-        mysql.pool.once 'enqueue',->
-            assert.equal mysql.pool._connectionQueue.length,1
+        mysql.pool.once 'enqueue', ->
+            assert.equal mysql.pool._connectionQueue.length, 1
             q.end -> q2.end done
         q2.begin -> q.begin -> throw Error("Shouldn't be called")
             
-    test 'logs',(done)->
-        q =  new Connection
+    test 'logs', (done) ->
+        q = new Connection
         q.log = true
-        q.q q:'SELECT 1 AS k',cb:(err,data)->
-            assert.equal q.logs[0].q,'SELECT 1 AS k'
+        q.q q: 'SELECT 1 AS k', cb: (err, data) ->
+            assert.equal q.logs[0].q, 'SELECT 1 AS k'
             q.end done
             
+    test 'row', (done) ->
+        q = new Connection
+        q.row q: 'SELECT 1 AS k', cb: (err, data) ->
+            assert.equal data.k, 1
+            q.end done
+    
+    test 'count', (done) ->
+        q = new Connection
+        q.count q: 'SELECT count(*)', cb: (err, data) ->
+            assert.equal data, 1
+            q.end done

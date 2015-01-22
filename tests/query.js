@@ -96,7 +96,9 @@ suite('Query', function() {
   test('error', function(done) {
     var q;
     q = new Connection;
-    q.on('error', function() {});
+    q.on('error', function() {
+      return null;
+    });
     return q.q({
       q: 'SELECT 1 AS k FROM no_table',
       cb: function(err, data) {
@@ -108,7 +110,9 @@ suite('Query', function() {
   test('streamerror', function(done) {
     var q, result, stream;
     q = new Connection;
-    q.on('error', function() {});
+    q.on('error', function() {
+      return null;
+    });
     result = 0;
     stream = function(row) {
       return result = row.k;
@@ -143,7 +147,9 @@ suite('Query', function() {
     var q, queries;
     q = new Connection;
     queries = [];
-    q.on('error', function() {});
+    q.on('error', function() {
+      return null;
+    });
     return q.batch(queries, function(err, data) {
       assert.equal(err, 'Cannot batch 0 queries');
       return done();
@@ -152,7 +158,9 @@ suite('Query', function() {
   test('batcherror2', function(done) {
     var q, queries;
     q = new Connection;
-    q.on('error', function() {});
+    q.on('error', function() {
+      return null;
+    });
     queries = [];
     queries.push({
       q: 'SELECT 1 AS k FROM no_table'
@@ -192,7 +200,7 @@ suite('Query', function() {
       });
     });
   });
-  return test('logs', function(done) {
+  test('logs', function(done) {
     var q;
     q = new Connection;
     q.log = true;
@@ -200,6 +208,28 @@ suite('Query', function() {
       q: 'SELECT 1 AS k',
       cb: function(err, data) {
         assert.equal(q.logs[0].q, 'SELECT 1 AS k');
+        return q.end(done);
+      }
+    });
+  });
+  test('row', function(done) {
+    var q;
+    q = new Connection;
+    return q.row({
+      q: 'SELECT 1 AS k',
+      cb: function(err, data) {
+        assert.equal(data.k, 1);
+        return q.end(done);
+      }
+    });
+  });
+  return test('count', function(done) {
+    var q;
+    q = new Connection;
+    return q.count({
+      q: 'SELECT count(*)',
+      cb: function(err, data) {
+        assert.equal(data, 1);
         return q.end(done);
       }
     });

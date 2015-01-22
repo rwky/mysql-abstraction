@@ -1,3 +1,12 @@
+## 2015-01-22 (0.3.0)
+
+* Changed the cb option is mandatory for queries
+* Added count method which assumes the first field returned from the first row is the COUNT function
+* Added row method which returns the first row
+* Added coffeelint
+* Updated depd
+* Updated mocha
+
 ## 2014-09-24 (0.2.0)
 
 * Upgraded node-mysql to 2.5.1

@@ -21,4 +21,19 @@ q.q({ q:'SELECT something FROM table WHERE id=?',params:[1],lock:1,cb: function(
         q.end()
     }})
 } })
+
+//count the number of rows
+q = new Connection();
+q.count({ q:'SELECT count(*) FROM table',cb: function(err,data){
+    //do something with data
+    console.log(data);
+} })
+
+//fetch the first row
+q = new Connection();
+q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
+    //do something with data
+    console.log(data);
+} })
+
 ```

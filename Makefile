@@ -10,6 +10,7 @@ ISTANBUL_LCOV_INFO_PATH ?= $(ISTANBUL_OUT)/lcov.info
 ISTANBUL_HTML_REPORT_PATH ?= $(ISTANBUL_OUT)/lcov-report/index.html
 TESTS_COFFEE ?= tests/*.coffee
 TESTS ?= tests/*.js
+COFFEELINT ?= ./node_modules/.bin/coffeelint
         
 coffee:
 	$(COFFEE) -c -b lib/index.coffee
@@ -20,5 +21,8 @@ test: coffee
 
 coverage: coffee
 	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(_MOCHA) -- --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
+	
+lint:
+	$(COFFEELINT) -f coffeelint.json lib/*.coffee tests/*.coffee
 
 .PHONY: test coverage coffee
