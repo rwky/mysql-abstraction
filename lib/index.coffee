@@ -35,8 +35,8 @@ module.exports = (settings) ->
             pool.getConnection @_returnConnection
             
         error: (err, cb) ->
+            err.query = @lastQuery
             if settings.logErrors?
-                err.query = @lastQuery
                 settings.logErrors err
             end = =>
                 @emit 'error', err

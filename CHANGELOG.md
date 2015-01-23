@@ -1,3 +1,7 @@
+## 2015-01-23 (0.4.0)
+
+* Always add the query to error objects as err.query so they can be caught by domains
+
 ## 2015-01-22 (0.3.0)
 
 * Changed the cb option is mandatory for queries
