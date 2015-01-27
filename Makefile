@@ -25,4 +25,8 @@ coverage: coffee
 lint:
 	$(COFFEELINT) -f coffeelint.json lib/*.coffee tests/*.coffee
 
-.PHONY: test coverage coffee
+publish:
+	tar -cf npm.tar lib/ tests/ package.json README.md coffeelint.json Makefile CHANGELOG.md
+	npm publish
+	
+.PHONY: test coverage coffee lint publish
