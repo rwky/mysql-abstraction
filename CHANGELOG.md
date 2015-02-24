@@ -1,3 +1,7 @@
+## 2015-02-24 (0.4.2)
+
+* Bumped deps
+
 ## 2015-01-23 (0.4.0)
 
 * Always add the query to error objects as err.query so they can be caught by domains
