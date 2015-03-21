@@ -20,13 +20,6 @@ module.exports = (settings) ->
             @_returnConnection = null
                 
         connect: (cb) ->
-            if @listeners('queue').length
-                deprecate("The 'queue' event for 'connection' is deprecated, please listen to the
-                          'enqueue' event of 'pool', to obtain the queue length use
-                          'pool._connectionQueue.length'")
-                process.nextTick =>
-                    if pool._connectionQueue.length
-                        @emit 'queue', pool._connectionQueue.length
             @_returnConnection = (err, connection) =>
                 @connection = connection
                 @lastQuery = null
@@ -107,23 +100,26 @@ module.exports = (settings) ->
                 @hasTransaction = false
                 cb()
             
-        end: (cb) ->
+        end: (ops, cb) ->
+            if arguments.length is 1
+                cb = ops
+                ops = {}
             if not @connection?
                 index = pool._connectionQueue.indexOf @_returnConnection
                 if index isnt -1
                     pool._connectionQueue.splice index, 1
                 @_reset()
-                if cb? then process.nextTick cb
+                process.nextTick cb
             else if @hasTransaction
-                @q q: 'COMMIT', cb: (err) =>
+                @q q: 'COMMIT', params: ops, cb: (err) =>
                     @connection.release()
                     @_reset()
-                    cb(err) if cb?
+                    cb(err)
             else
                 @connection.release()
                 @_reset()
 
-                process.nextTick cb if cb?
+                process.nextTick cb
                 
         batch: (queries, cb) ->
             return @error "Cannot batch 0 queries", cb if queries.length is 0

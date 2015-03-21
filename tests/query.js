@@ -78,6 +78,21 @@ suite('Query', function() {
       }
     });
   });
+  test('endwithops', function(done) {
+    var q;
+    q = new Connection;
+    return q.q({
+      q: 'SELECT 1 AS k',
+      cb: function(err, data) {
+        assert.equal(data[0].k, 1);
+        return q.end(function() {
+          return q.end({
+            timeout: 30000
+          }, done);
+        });
+      }
+    });
+  });
   test('commit', function(done) {
     var q;
     q = new Connection;
@@ -168,20 +183,6 @@ suite('Query', function() {
     return q.batch(queries, function(err, data) {
       assert.equal(err.code, 'ER_NO_DB_ERROR');
       return done();
-    });
-  });
-  test('queue', function(done) {
-    var q, q2;
-    q = new Connection;
-    q2 = new Connection;
-    q.on('queue', function(qlen) {
-      assert.equal(qlen, 1);
-      return q2.end();
-    });
-    return q2.begin(function() {
-      return q.begin(function() {
-        return q.end(done);
-      });
     });
   });
   test('enqueue', function(done) {

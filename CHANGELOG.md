@@ -1,3 +1,9 @@
+## 2015-03-21 (1.0.0)
+
+* Removed deprecated queue event
+* Added option to send arguments i.e. timeout to COMMIT when running Connection.end
+* Connection.end requires at least one argument which is the callback
+
 ## 2015-02-24 (0.4.2)
 
 * Bumped deps

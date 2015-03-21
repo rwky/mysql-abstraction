@@ -40,6 +40,12 @@ suite 'Query', ->
             assert.equal data[0].k, 1
             q.end -> q.end done
             
+    test 'endwithops', (done) ->
+        q =  new Connection
+        q.q q: 'SELECT 1 AS k', cb: (err, data) ->
+            assert.equal data[0].k, 1
+            q.end -> q.end {timeout: 30000}, done
+            
     
     test 'commit', (done) ->
         q =  new Connection
@@ -94,14 +100,6 @@ suite 'Query', ->
         q.batch queries, (err, data) ->
             assert.equal err.code, 'ER_NO_DB_ERROR'
             done()
-            
-    test 'queue', (done) ->
-        q = new Connection
-        q2 = new Connection
-        q.on 'queue', (qlen) ->
-            assert.equal qlen, 1
-            q2.end()
-        q2.begin -> q.begin -> q.end done
             
     test 'enqueue', (done) ->
         q = new Connection
