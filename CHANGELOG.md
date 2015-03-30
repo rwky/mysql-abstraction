@@ -1,3 +1,7 @@
+## 2015-03-21 (1.1.0)
+
+* Bumped deps
+
 ## 2015-03-21 (1.0.0)
 
 * Removed deprecated queue event
