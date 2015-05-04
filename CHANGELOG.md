@@ -1,3 +1,7 @@
+## 2015-05-04 (1.1.1)
+
+* Fixed error emitting when batching 0 queries to be an Error object
+
 ## 2015-03-21 (1.1.0)
 
 * Bumped deps

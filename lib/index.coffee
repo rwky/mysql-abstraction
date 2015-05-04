@@ -122,7 +122,7 @@ module.exports = (settings) ->
                 process.nextTick cb
                 
         batch: (queries, cb) ->
-            return @error "Cannot batch 0 queries", cb if queries.length is 0
+            return @error new Error("Cannot batch 0 queries"), cb if queries.length is 0
             results = []
             executed = 1
             run = (err, res) =>

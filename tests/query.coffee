@@ -89,7 +89,7 @@ suite 'Query', ->
         queries = []
         q.on 'error', -> null
         q.batch queries, (err, data) ->
-            assert.equal err, 'Cannot batch 0 queries'
+            assert.equal err.message, 'Cannot batch 0 queries'
             done()
             
     test 'batcherror2', (done) ->
