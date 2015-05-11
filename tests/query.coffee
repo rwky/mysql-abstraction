@@ -11,6 +11,18 @@ suite 'Query', ->
         q.q q: 'SELECT 1 AS k', cb: (err, data) ->
             assert.equal data[0].k, 1
             q.end done
+
+    test 'select-params', (done) ->
+        q =  new Connection
+        q.q q: 'SELECT ? AS k', params: [1], cb: (err, data) ->
+            assert.equal data[0].k, 1
+            q.end done
+
+    test 'select-aliases', (done) ->
+        q =  new Connection
+        q.q sql: 'SELECT ? AS k', values: [1], cb: (err, data) ->
+            assert.equal data[0].k, 1
+            q.end done
                     
     test 'lock1', (done) ->
         q =  new Connection 
@@ -54,6 +66,14 @@ suite 'Query', ->
                 assert.equal data[0].k, 1
                 q.commit -> q.end done
     
+    test 'timeout', (done) =>
+        @timeout(20000)
+        q =  new Connection
+        q.on 'error', (err) -> null
+        q.begin ->
+            q.q q: 'SELECT SLEEP(10)', timeout: 1, cb: (err, data) ->
+                assert.equal err.code, 'PROTOCOL_SEQUENCE_TIMEOUT'
+                done()
 
     test 'error', (done) ->
         q =  new Connection
@@ -62,7 +82,6 @@ suite 'Query', ->
             assert.equal err.code, 'ER_NO_DB_ERROR'
             done()
            
-
     test 'streamerror', (done) ->
         q =  new Connection
         q.on 'error', -> null

@@ -24,6 +24,30 @@ suite('Query', function() {
       }
     });
   });
+  test('select-params', function(done) {
+    var q;
+    q = new Connection;
+    return q.q({
+      q: 'SELECT ? AS k',
+      params: [1],
+      cb: function(err, data) {
+        assert.equal(data[0].k, 1);
+        return q.end(done);
+      }
+    });
+  });
+  test('select-aliases', function(done) {
+    var q;
+    q = new Connection;
+    return q.q({
+      sql: 'SELECT ? AS k',
+      values: [1],
+      cb: function(err, data) {
+        assert.equal(data[0].k, 1);
+        return q.end(done);
+      }
+    });
+  });
   test('lock1', function(done) {
     var q;
     q = new Connection;
@@ -108,6 +132,26 @@ suite('Query', function() {
       });
     });
   });
+  test('timeout', (function(_this) {
+    return function(done) {
+      var q;
+      _this.timeout(20000);
+      q = new Connection;
+      q.on('error', function(err) {
+        return null;
+      });
+      return q.begin(function() {
+        return q.q({
+          q: 'SELECT SLEEP(10)',
+          timeout: 1,
+          cb: function(err, data) {
+            assert.equal(err.code, 'PROTOCOL_SEQUENCE_TIMEOUT');
+            return done();
+          }
+        });
+      });
+    };
+  })(this));
   test('error', function(done) {
     var q;
     q = new Connection;

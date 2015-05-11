@@ -1,3 +1,9 @@
+## 2015-05-11 (1.2.0)
+
+* Allow passing of timeouts to queries (and other arbitary keys via ops)
+* ops.values is an alias for ops.params
+* ops.sql is an alias for ops.q
+
 ## 2015-05-04 (1.1.1)
 
 * Fixed error emitting when batching 0 queries to be an Error object

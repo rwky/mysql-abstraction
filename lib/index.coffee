@@ -49,7 +49,8 @@ module.exports = (settings) ->
                 @logs.push ops
             query = =>
                 ops.cb = ops.cb or ops.callback
-                ops.params = ops.params or []
+                ops.values = ops.values or ops.params or []
+                ops.sql = ops.sql or ops.q
                 streamError = null
                 if ops.lock?
                     ops.q += if ops.lock is 1 then ' LOCK IN SHARE MODE' else ' FOR UPDATE'
@@ -63,7 +64,7 @@ module.exports = (settings) ->
                         if streamError? then return @error streamError, ops.cb
                         ops.cb()
                 else
-                    @lastQuery = @connection.query ops.q, ops.params, (err, data) =>
+                    @lastQuery = @connection.query ops, (err, data) =>
                         if err
                             @error err, ops.cb
                         else
@@ -95,8 +96,9 @@ module.exports = (settings) ->
             @q q: 'START TRANSACTION', cb: ->
                 cb()
             
-        commit: (cb) ->
-            @q q: 'COMMIT', cb: =>
+        commit: (ops, cb) ->
+            unless cb? then [cb, ops] = [ops, {}]
+            @q q: 'COMMIT', timeout: ops.timeout, cb: =>
                 @hasTransaction = false
                 cb()
             
@@ -111,7 +113,7 @@ module.exports = (settings) ->
                 @_reset()
                 process.nextTick cb
             else if @hasTransaction
-                @q q: 'COMMIT', params: ops, cb: (err) =>
+                @commit ops, (err) =>
                     @connection.release()
                     @_reset()
                     cb(err)
