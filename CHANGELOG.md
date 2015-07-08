@@ -1,6 +1,7 @@
 ## 2015-07-08 (1.3.0)
 
 * Added waringsAreErrors option to treat mysql warnings as errors
+* Updated node-mysql to 2.7.x
 
 ## 2015-05-11 (1.2.0)
 
