@@ -65,7 +65,16 @@ module.exports = (settings) ->
                         ops.cb()
                 else
                     @lastQuery = @connection.query ops, (err, data) =>
-                        if err
+                        if ops.warningsAreErrors and data?.warningCount > 0
+                            @connection.query 'SHOW WARNINGS', (err, warnings) =>
+                                if err
+                                    @error err, ops.cb
+                                else
+                                    error = new Error('Warnings treated as errors ' + 
+                                    data.warningCount)
+                                    error.warnings = warnings
+                                    @error error, ops.cb
+                        else if err
                             @error err, ops.cb
                         else
                             ops.cb null, data

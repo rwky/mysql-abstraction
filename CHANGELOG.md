@@ -1,3 +1,7 @@
+## 2015-07-08 (1.3.0)
+
+* Added waringsAreErrors option to treat mysql warnings as errors
+
 ## 2015-05-11 (1.2.0)
 
 * Allow passing of timeouts to queries (and other arbitary keys via ops)

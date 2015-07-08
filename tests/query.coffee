@@ -1,7 +1,8 @@
 assert = require('chai').assert
 mysql = require('../lib/index')({
     user: process.env.MYSQL_USER, host: process.env.MYSQL_HOST,
-    password: process.env.MYSQL_PASSWORD, connectionLimit: 1
+    password: process.env.MYSQL_PASSWORD, connectionLimit: 1,
+    database: 'mysql'
     })
 Connection = mysql.connection
 
@@ -25,7 +26,7 @@ suite 'Query', ->
             q.end done
                     
     test 'lock1', (done) ->
-        q =  new Connection 
+        q =  new Connection
         q.q q: 'SELECT 1 AS k', lock: 1, cb: (err, data) ->
             assert.equal data[0].k, 1
             q.end done
@@ -79,7 +80,7 @@ suite 'Query', ->
         q =  new Connection
         q.on 'error', -> null
         q.q q: 'SELECT 1 AS k FROM no_table', cb: (err, data) ->
-            assert.equal err.code, 'ER_NO_DB_ERROR'
+            assert.equal err.code, 'ER_NO_SUCH_TABLE'
             done()
            
     test 'streamerror', (done) ->
@@ -90,7 +91,7 @@ suite 'Query', ->
             result = row.k
         
         q.q q: 'SELECT 1 AS k FROM no_table', lock: 2, stream: stream, cb: (err) ->
-            assert.equal err.code, 'ER_NO_DB_ERROR'
+            assert.equal err.code, 'ER_NO_SUCH_TABLE'
             done()
      
     test 'batch', (done) ->
@@ -117,7 +118,7 @@ suite 'Query', ->
         queries = []
         queries.push q: 'SELECT 1 AS k FROM no_table'
         q.batch queries, (err, data) ->
-            assert.equal err.code, 'ER_NO_DB_ERROR'
+            assert.equal err.code, 'ER_NO_SUCH_TABLE'
             done()
             
     test 'enqueue', (done) ->
@@ -146,3 +147,23 @@ suite 'Query', ->
         q.count q: 'SELECT count(*)', cb: (err, data) ->
             assert.equal data, 1
             q.end done
+
+    test 'warningsAreErrors', (done) ->
+        q = new Connection
+        q.q q: 'CREATE TEMPORARY TABLE warnings_test (test_col VARCHAR(5));', cb: (err) ->
+            if err then throw err
+            q.on 'error', -> null
+            q.q q: 'INSERT INTO warnings_test SET test_col="123456"', warningsAreErrors: true,
+            cb: (err) ->
+                assert.equal err.message, 'Warnings treated as errors 1'
+                assert.equal err.warnings[0].Message, 
+                "Data truncated for column 'test_col' at row 1"
+                done()
+    test 'warningsAreErrorsNotEnabled', (done) ->
+        q = new Connection
+        q.q q: 'CREATE TEMPORARY TABLE warnings_test (test_col VARCHAR(5));', cb: (err) ->
+            if err then throw err
+            q.q q: 'INSERT INTO warnings_test SET test_col="123456"', cb: (err) ->
+                assert.isNull err
+                done()
+

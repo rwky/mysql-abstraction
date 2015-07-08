@@ -1,3 +1,5 @@
+[![Dependency Status](https://gemnasium.com/rwky/mysql-abstraction.svg)](https://gemnasium.com/rwky/mysql-abstraction) [![NPM Version](https://img.shields.io/npm/v/mysql-abstraction.svg?style=flat)](https://www.npmjs.org/package/mysql-abstraction)
+
 This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods and helps deal with transactions.
 
 Example usage:
@@ -37,3 +39,5 @@ q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
 } })
 
 ```
+
+See tests/query.coffee for more usage examples
