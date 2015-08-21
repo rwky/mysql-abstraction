@@ -53,9 +53,9 @@ module.exports = (settings) ->
                 ops.sql = ops.sql or ops.q
                 streamError = null
                 if ops.lock?
-                    ops.q += if ops.lock is 1 then ' LOCK IN SHARE MODE' else ' FOR UPDATE'
+                    ops.sql += if ops.lock is 1 then ' LOCK IN SHARE MODE' else ' FOR UPDATE'
                 if ops.stream?
-                    @lastQuery = query = @connection.query ops.q, ops.params
+                    @lastQuery = query = @connection.query ops.sql, ops.params
                     query.on 'error', (err) ->
                         streamError = err
                     query.on 'result', (row) ->
