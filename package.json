@@ -10,7 +10,7 @@
     "node": ">=0.10"
   },
   "dependencies": {
-    "mysql": "2.8.x",
+    "mysql": "2.9.x",
     "depd": "1.x.x"
   },
   "main":"lib/index",

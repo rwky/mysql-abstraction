@@ -73,6 +73,49 @@ suite('Query', function() {
       }
     });
   });
+  test('lock-functions', function(done) {
+    var q, q2, q3;
+    q = new Connection(true);
+    q2 = new Connection(true);
+    q3 = new Connection;
+    return q3.q({
+      q: 'CREATE TEMPORARY TABLE lockTest (test varchar(30))',
+      cb: function() {
+        return q3.q({
+          q: 'INSERT INTO lockTest VALUES ("test")',
+          cb: function() {
+            return q3.end(function() {
+              q.row({
+                q: 'SELECT * FROM lockTest',
+                lock: 2,
+                cb: function(err, data) {
+                  assert.equal('test', data.test);
+                  return q.q({
+                    q: 'UPDATE lockTest SET test="test2"',
+                    cb: function() {
+                      return setTimeout(function() {
+                        return q.end(function() {
+                          return null;
+                        });
+                      }, 100);
+                    }
+                  });
+                }
+              });
+              return q2.row({
+                q: 'SELECT * FROM lockTest',
+                lock: 2,
+                cb: function(err, data) {
+                  assert.equal('test2', data.test);
+                  return q2.end(done);
+                }
+              });
+            });
+          }
+        });
+      }
+    });
+  });
   test('stream', function(done) {
     var q, result, stream;
     q = new Connection;
@@ -308,7 +351,7 @@ suite('Query', function() {
     var q;
     q = new Connection;
     return q.q({
-      q: 'CREATE TEMPORARY TABLE warnings_test (test_col VARCHAR(5));',
+      q: 'CREATE TEMPORARY TABLE IF NOT EXISTS warnings_test (test_col VARCHAR(5));',
       cb: function(err) {
         if (err) {
           throw err;

@@ -1,3 +1,9 @@
+## 2015-08-22 (1.5.0) 
+
+* Updated node-mysql to 2.9.x
+* Fixed issue with locks not working
+* Fixed issue with lastQuery not working with streams
+
 ## 2015-07-14 (1.4.0)
 
 * Updated node-mysql to 2.8.x

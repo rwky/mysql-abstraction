@@ -37,6 +37,29 @@ suite 'Query', ->
             assert.equal data[0].k, 1
             q.end done
                 
+    test 'lock-functions', (done) ->
+        q = new Connection true
+        q2 = new Connection true
+        q3 = new Connection 
+        q3.q q: 'CREATE TEMPORARY TABLE lockTest (test varchar(30))', cb: ->
+            q3.q q: 'INSERT INTO lockTest VALUES ("test")', cb: ->
+                q3.end ->
+                    q.row 
+                        q: 'SELECT * FROM lockTest'
+                        lock: 2
+                        cb: (err, data) ->
+                            assert.equal 'test', data.test
+                            q.q q: 'UPDATE lockTest SET test="test2"', cb: ->
+                                setTimeout ->
+                                    q.end ->  null
+                                , 100
+                    q2.row 
+                        q: 'SELECT * FROM lockTest'
+                        lock: 2
+                        cb: (err, data) ->
+                            assert.equal 'test2', data.test
+                            q2.end done
+                      
     test 'stream', (done) ->
         q =  new Connection
         result = 0
@@ -161,9 +184,11 @@ suite 'Query', ->
                 done()
     test 'warningsAreErrorsNotEnabled', (done) ->
         q = new Connection
-        q.q q: 'CREATE TEMPORARY TABLE warnings_test (test_col VARCHAR(5));', cb: (err) ->
-            if err then throw err
-            q.q q: 'INSERT INTO warnings_test SET test_col="123456"', cb: (err) ->
-                assert.isNull err
-                done()
+        q.q 
+            q: 'CREATE TEMPORARY TABLE IF NOT EXISTS warnings_test (test_col VARCHAR(5));'
+            cb: (err) ->
+                if err then throw err
+                q.q q: 'INSERT INTO warnings_test SET test_col="123456"', cb: (err) ->
+                    assert.isNull err
+                    done()
 
