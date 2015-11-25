@@ -1,12 +1,25 @@
 assert = require('chai').assert
+async = require 'async'
 mysql = require('../lib/index')({
     user: process.env.MYSQL_USER, host: process.env.MYSQL_HOST,
-    password: process.env.MYSQL_PASSWORD, connectionLimit: 1,
+    password: process.env.MYSQL_PASSWORD, connectionLimit: 10,
     database: 'mysql'
     })
 Connection = mysql.connection
 
 suite 'Query', ->
+    before (done) ->
+        q = new Connection
+        async.series [
+            (c) -> q.q q: 'CREATE DATABASE IF NOT EXISTS test', cb: c
+            (c) -> q.q q: 'CREATE TABLE IF NOT EXISTS 
+            test.innodb_deadlock_maker(a INT PRIMARY KEY) ENGINE=innodb', cb: c
+            (c) -> q.q q: 'CREATE TABLE test.lockTest (test varchar(30))', cb: c
+            (c) -> q.q q: 'TRUNCATE TABLE test.lockTest', cb: c
+            (c) -> q.q q: 'INSERT INTO test.lockTest VALUES ("test")', cb: c
+            (c) ->  q.end c
+        ], done
+
     test 'select', (done) ->
         q =  new Connection
         q.q q: 'SELECT 1 AS k', cb: (err, data) ->
@@ -40,26 +53,22 @@ suite 'Query', ->
     test 'lock-functions', (done) ->
         q = new Connection true
         q2 = new Connection true
-        q3 = new Connection 
-        q3.q q: 'CREATE TEMPORARY TABLE lockTest (test varchar(30))', cb: ->
-            q3.q q: 'INSERT INTO lockTest VALUES ("test")', cb: ->
-                q3.end ->
-                    q.row 
-                        q: 'SELECT * FROM lockTest'
-                        lock: 2
-                        cb: (err, data) ->
-                            assert.equal 'test', data.test
-                            q.q q: 'UPDATE lockTest SET test="test2"', cb: ->
-                                setTimeout ->
-                                    q.end ->  null
-                                , 100
-                    q2.row 
-                        q: 'SELECT * FROM lockTest'
-                        lock: 2
-                        cb: (err, data) ->
-                            assert.equal 'test2', data.test
-                            q2.end done
-                      
+        q.row 
+            q: 'SELECT * FROM test.lockTest'
+            lock: 2
+            cb: (err, data) ->
+                q2.row 
+                    q: 'SELECT * FROM test.lockTest'
+                    lock: 2
+                    cb: (err, data) ->
+                        assert.equal 'test2', data.test
+                        q2.end done
+                              
+                assert.equal 'test', data.test
+                q.q q: 'UPDATE test.lockTest SET test="test2"', cb: ->
+                    setTimeout ->
+                        q.end ->  null
+                    , 100
     test 'stream', (done) ->
         q =  new Connection
         result = 0
@@ -91,7 +100,7 @@ suite 'Query', ->
                 q.commit -> q.end done
     
     test 'timeout', (done) =>
-        @timeout(20000)
+        @timeout 20000
         q =  new Connection
         q.on 'error', (err) -> null
         q.begin ->
@@ -145,12 +154,19 @@ suite 'Query', ->
             done()
             
     test 'enqueue', (done) ->
-        q = new Connection
-        q2 = new Connection
+        qs = []
         mysql.pool.once 'enqueue', ->
             assert.equal mysql.pool._connectionQueue.length, 1
-            q.end -> q2.end done
-        q2.begin -> q.begin -> throw Error("Shouldn't be called")
+            async.each qs, (q, c) ->
+                q.end c
+            , done
+
+        async.whilst ->
+            mysql.pool._allConnections.length <= 10
+        , (c) ->
+            q = new Connection
+            qs.push q
+            q.begin c
             
     test 'logs', (done) ->
         q = new Connection
@@ -182,6 +198,7 @@ suite 'Query', ->
                 assert.equal err.warnings[0].Message, 
                 "Data truncated for column 'test_col' at row 1"
                 done()
+
     test 'warningsAreErrorsNotEnabled', (done) ->
         q = new Connection
         q.q 
@@ -190,5 +207,31 @@ suite 'Query', ->
                 if err then throw err
                 q.q q: 'INSERT INTO warnings_test SET test_col="123456"', cb: (err) ->
                     assert.isNull err
-                    done()
+                    q.end done
+ 
+    test 'deadlocks', (done) =>
+        @timeout 65000
+        q = new Connection true
+        q2 = new Connection true
+        deadlocks = 0
+        q2.on 'deadlock', ->
+            deadlocks += 1
+
+        async.series [
+            (c) ->
+                q.q q: 'SET autocommit=0', cb: c
+            (c) ->
+                q2.q q: 'SET autocommit=0', cb: c
+            (c) ->
+                q.q q: 'INSERT INTO test.innodb_deadlock_maker VALUES(1)', cb: c
+            (c) ->
+                q2.q q: 'SELECT * FROM test.innodb_deadlock_maker FOR UPDATE', cb: ->
+                    assert.equal deadlocks, 1
+                    q2.end done
+                setTimeout c, 1000
+            (c) ->
+                q.q q: 'INSERT INTO test.innodb_deadlock_maker VALUES(0);', cb: c
+            (c) ->
+                q.end c
+        ]
 

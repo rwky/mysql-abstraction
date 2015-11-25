@@ -1,23 +1,28 @@
 mysql = require 'mysql'
 events = require 'events'
-deprecate =  require('depd')('mysql-abstraction')
+async = require 'async'
 
 module.exports = (settings) ->
     pool = mysql.createPool settings
 
     pool: pool
+
     connection: class Connection extends events.EventEmitter
         constructor: (@autoStartTransaction = false) ->
             @hasTransaction = false
             @connection = null
             @log = false
             @logs = []
+            @queries = []
+            @retries = 0
+            @maxRetries = 3
                 
         _reset: ->
             @hasTransaction = false
             @connection = null
             @logs = []
             @_returnConnection = null
+            @queries = []
                 
         connect: (cb) ->
             @_returnConnection = (err, connection) =>
@@ -28,7 +33,16 @@ module.exports = (settings) ->
             pool.getConnection @_returnConnection
             
         error: (err, cb) ->
+            #deadlock, reissue query
             err.query = @lastQuery
+            if err.code is 'ER_LOCK_DEADLOCK' and @retries < @maxRetries
+                @retries += 1
+                @emit 'deadlock', err
+                @hasTransaction = false
+                return async.eachSeries @queries, (query, c) =>
+                    @q { q: query.q, params: query.params, retry: true, cb: c }
+                , cb
+ 
             if settings.logErrors?
                 settings.logErrors err
             end = =>
@@ -54,6 +68,7 @@ module.exports = (settings) ->
                 streamError = null
                 if ops.lock?
                     ops.sql += if ops.lock is 1 then ' LOCK IN SHARE MODE' else ' FOR UPDATE'
+                unless ops.retry then @queries.push { q: ops.q, params: ops.params }
                 if ops.stream?
                     @lastQuery = query = @connection.query ops.sql, ops.params
                     query.on 'error', (err) ->

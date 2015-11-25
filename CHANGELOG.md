@@ -1,3 +1,9 @@
+## future (2.0.0)
+
+* Updated dev deps and removed obsolete deps
+* Added retrying of transactions that fail due to deadlock
+* Enhanced tests
+
 ## 2015-08-22 (1.5.0) 
 
 * Updated node-mysql to 2.9.x
