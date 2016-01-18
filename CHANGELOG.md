@@ -1,8 +1,9 @@
-## future (2.0.0)
+## 2016-01-18 (2.0.0)
 
-* Updated dev deps and removed obsolete deps
+* Updated deps and removed obsolete deps
 * Added retrying of transactions that fail due to deadlock
 * Enhanced tests
+* Updated License
 
 ## 2015-08-22 (1.5.0) 
 
