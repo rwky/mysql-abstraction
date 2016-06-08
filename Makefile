@@ -27,7 +27,9 @@ lint:
 
 publish:
 	rm -rf npm.tar
-	tar -cf npm.tar lib/ tests/ package.json README.md coffeelint.json Makefile CHANGELOG.md
+	mkdir tar
+	cp -a lib/ tests/ package.json README.md coffeelint.json Makefile CHANGELOG.md tar/
+	tar -czf npm.tar tar 
 	npm publish npm.tar
 	
 .PHONY: test coverage coffee lint publish
