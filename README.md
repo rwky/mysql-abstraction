@@ -41,3 +41,5 @@ q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
 ```
 
 See tests/query.coffee for more usage examples
+
+Note when deadlocks are automatically rolled back and queries are reissued any autoincrement columns aren't reverted, see http://stackoverflow.com/questions/14758625/mysql-auto-increment-columns-on-transaction-commit-and-rollback for more details
