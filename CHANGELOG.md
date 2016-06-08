@@ -1,3 +1,8 @@
+## 2016-06-08 (2.1.0)
+
+* Updated dev deps
+* Update node-mysql to 2.11.x
+
 ## 2016-01-18 (2.0.0)
 
 * Updated deps and removed obsolete deps
