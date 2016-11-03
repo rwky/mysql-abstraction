@@ -26,7 +26,7 @@ lint:
 	$(COFFEELINT) -f coffeelint.json lib/*.coffee tests/*.coffee
 
 publish:
-	rm -rf npm.tar
+	rm -rf npm.tar tar
 	mkdir tar
 	cp -a lib/ tests/ package.json README.md coffeelint.json Makefile CHANGELOG.md tar/
 	tar -czf npm.tar tar 

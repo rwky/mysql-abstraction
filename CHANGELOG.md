@@ -1,8 +1,9 @@
-## 2016-11-03 (2.2.0)
+## 2016-11-03 (2.2.1)
 
 * Updated node-mysql to 2.12.x
 * Updated async to 2.1.x
 * Updated dev deps
+* Fixed makefile publishing
 
 ## 2016-06-08 (2.1.0)
 
