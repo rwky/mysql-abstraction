@@ -1,3 +1,13 @@
+## 2017-04-14 (3.0.0)
+
+* Updated async to 2.3.x
+* Added stats collection which is enabled by default
+
+## 2017-02-06 (2.2.2)
+
+* Updated node-mysql to 2.13.x
+* Updated dev deps
+
 ## 2016-11-03 (2.2.1)
 
 * Updated node-mysql to 2.12.x

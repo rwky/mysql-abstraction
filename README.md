@@ -43,3 +43,5 @@ q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
 See tests/query.coffee for more usage examples
 
 Note when deadlocks are automatically rolled back and queries are reissued any autoincrement columns aren't reverted, see http://stackoverflow.com/questions/14758625/mysql-auto-increment-columns-on-transaction-commit-and-rollback for more details
+
+There is a crude stats collection via the connection.stats prameter which counts the number of select/update/delete/insert queries per connection, you can disable stats collection by setting connection.gatherStats to false

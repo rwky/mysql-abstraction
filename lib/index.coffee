@@ -9,21 +9,25 @@ module.exports = (settings) ->
 
     connection: class Connection extends events.EventEmitter
         constructor: (@autoStartTransaction = false) ->
-            @hasTransaction = false
-            @connection = null
+            @gatherStats = true
             @log = false
             @logs = []
-            @queries = []
-            @retries = 0
             @maxRetries = 3
-                
+            @_reset()
+               
         _reset: ->
             @hasTransaction = false
             @connection = null
             @logs = []
             @_returnConnection = null
             @queries = []
-                
+            @retries = 0
+            @stats =
+                select: 0
+                update: 0
+                delete: 0
+                insert: 0
+                 
         connect: (cb) ->
             @_returnConnection = (err, connection) =>
                 @connection = connection
@@ -65,6 +69,14 @@ module.exports = (settings) ->
                 ops.cb = ops.cb or ops.callback
                 ops.values = ops.values or ops.params or []
                 ops.sql = ops.sql or ops.q
+                ###
+                #This is crude and doesn't support complex queries i.e. UPDATE .... SELECT
+                #But it does the job for most cases
+                ###
+                if @gatherStats
+                    for stat in Object.keys @stats
+                        if ops.sql.toLowerCase().indexOf(stat) isnt -1
+                            @stats[stat] += 1
                 streamError = null
                 if ops.lock?
                     ops.sql += if ops.lock is 1 then ' LOCK IN SHARE MODE' else ' FOR UPDATE'

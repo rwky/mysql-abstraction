@@ -235,3 +235,48 @@ suite 'Query', ->
                 q.end c
         ]
 
+    test 'statsSelect', (done) ->
+        q = new Connection
+        q.q
+            q: 'SELECT 1'
+            cb: (err) ->
+                if err then throw err
+                assert.equal q.stats.select, 1
+                q.end done
+    
+    test 'statsInsert', (done) ->
+        q = new Connection
+        q.q
+            q: 'INSERT INTO test.lockTest VALUES("insert")'
+            cb: (err) ->
+                if err then throw err
+                assert.equal q.stats.insert, 1
+                q.end done
+                
+    test 'statsUpdate', (done) ->
+        q = new Connection
+        q.q
+            q: 'UPDATE test.lockTest SET test="update"'
+            cb: (err) ->
+                if err then throw err
+                assert.equal q.stats.update, 1
+                q.end done
+
+    test 'statsDelete', (done) ->
+        q = new Connection
+        q.q
+            q: "DELETE FROM test.lockTest"
+            cb: (err) ->
+                if err then throw err
+                assert.equal q.stats.delete, 1
+                q.end done
+
+    test 'statsSelectDisabled', (done) ->
+        q = new Connection
+        q.gatherStats = false
+        q.q
+            q: "SELECT 1"
+            cb: (err) ->
+                if err then throw err
+                assert.equal q.stats.select, 0
+                q.end done

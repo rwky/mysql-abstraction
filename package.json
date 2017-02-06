@@ -2,7 +2,7 @@
   "author": "Rowan Wookey <admin@rwky.net> (https://www.rwky.net)",
   "name": "mysql-abstraction",
   "description": "Abstraction layer on top of Felix G's mysql driver",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "keywords":"mysql",
   "homepage":"https://github.com/rwky/mysql-abstraction",
   "bugs": { "url": "https://github.com/rwky/mysql-abstraction/issues" },
@@ -10,15 +10,15 @@
     "node": ">=0.10"
   },
   "dependencies": {
-    "mysql": "2.12.x",
-    "async": "2.1.x"
+    "mysql": "2.13.x",
+    "async": "2.3.x"
   },
   "main":"lib/index",
   "devDependencies": {
-    "mocha":"3.1.x",
+    "mocha":"3.2.x",
     "chai":"3.5.x",
     "istanbul":"0.4.x",
-    "coffee-script":"1.11.x",
+    "coffee-script":"1.12.x",
     "coffeelint":"1.16.x",
     "coffeelint-variable-scope": "0.0.x"
   },
