@@ -1,3 +1,8 @@
+## 2016-02-06 (2.2.2)
+
+* Updated node-mysql to 2.13.x
+* Updated dev deps
+
 ## 2016-11-03 (2.2.1)
 
 * Updated node-mysql to 2.12.x
