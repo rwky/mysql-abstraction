@@ -1,3 +1,7 @@
+## 2017-04-25 (3.0.1)
+
+* Added lastOps to Connection object useful for debuggig 
+
 ## 2017-04-14 (3.0.0)
 
 * Updated async to 2.3.x

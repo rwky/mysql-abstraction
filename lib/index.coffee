@@ -22,6 +22,8 @@ module.exports = (settings) ->
             @_returnConnection = null
             @queries = []
             @retries = 0
+            @lastQuery = null
+            @lastOps = null
             @stats =
                 select: 0
                 update: 0
@@ -31,7 +33,6 @@ module.exports = (settings) ->
         connect: (cb) ->
             @_returnConnection = (err, connection) =>
                 @connection = connection
-                @lastQuery = null
                 if err then @emit 'error', err
                 cb(err)
             pool.getConnection @_returnConnection
@@ -65,6 +66,7 @@ module.exports = (settings) ->
         q: (ops) ->
             if @log
                 @logs.push ops
+            @lastOps = ops
             query = =>
                 ops.cb = ops.cb or ops.callback
                 ops.values = ops.values or ops.params or []
