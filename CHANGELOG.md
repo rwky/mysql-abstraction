@@ -1,3 +1,7 @@
+## 2017-05-19 (3.0.2)
+
+* Updated deps
+
 ## 2017-04-25 (3.0.1)
 
 * Added lastOps to Connection object useful for debuggig 
