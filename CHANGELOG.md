@@ -1,3 +1,9 @@
+## 2017-06-08 (3.0.3) 
+
+* Updated dev deps
+* Added MYSQL_PORT to testing
+* Fixed a bug where if q.on 'error' was specified and row or count didn't return data node would throw an error "Cannot read property '0' of undefined"
+
 ## 2017-05-19 (3.0.2)
 
 * Updated deps

@@ -4,6 +4,7 @@ mysql = require('../lib/index')({
     user: process.env.MYSQL_USER, host: process.env.MYSQL_HOST,
     password: process.env.MYSQL_PASSWORD, connectionLimit: 10,
     database: 'mysql'
+    port: process.env.MYSQL_PORT
     })
 Connection = mysql.connection
 
@@ -280,3 +281,20 @@ suite 'Query', ->
                 if err then throw err
                 assert.equal q.stats.select, 0
                 q.end done
+    test 'testRowWithoutResults', (done) ->
+        q = new Connection
+        q.on 'error', -> null
+        q.row
+            q: 'SELECT pie FROM cake',
+            cb: (err, data) ->
+                assert.equal data, null
+                done()
+   
+    test 'testCountWithoutResults', (done) ->
+        q = new Connection
+        q.on 'error', -> null
+        q.count
+            q: 'SELECT cake FROM pie',
+            cb: (err, data) ->
+                assert.equal data, null
+                done()

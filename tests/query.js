@@ -10,7 +10,8 @@ mysql = require('../lib/index')({
   host: process.env.MYSQL_HOST,
   password: process.env.MYSQL_PASSWORD,
   connectionLimit: 10,
-  database: 'mysql'
+  database: 'mysql',
+  port: process.env.MYSQL_PORT
 });
 
 Connection = mysql.connection;
@@ -493,7 +494,7 @@ suite('Query', function() {
       }
     });
   });
-  return test('statsSelectDisabled', function(done) {
+  test('statsSelectDisabled', function(done) {
     var q;
     q = new Connection;
     q.gatherStats = false;
@@ -505,6 +506,34 @@ suite('Query', function() {
         }
         assert.equal(q.stats.select, 0);
         return q.end(done);
+      }
+    });
+  });
+  test('testRowWithoutResults', function(done) {
+    var q;
+    q = new Connection;
+    q.on('error', function() {
+      return null;
+    });
+    return q.row({
+      q: 'SELECT pie FROM cake',
+      cb: function(err, data) {
+        assert.equal(data, null);
+        return done();
+      }
+    });
+  });
+  return test('testCountWithoutResults', function(done) {
+    var q;
+    q = new Connection;
+    q.on('error', function() {
+      return null;
+    });
+    return q.count({
+      q: 'SELECT cake FROM pie',
+      cb: function(err, data) {
+        assert.equal(data, null);
+        return done();
       }
     });
   });

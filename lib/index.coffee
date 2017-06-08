@@ -121,12 +121,12 @@ module.exports = (settings) ->
         
         row: (ops) ->
             cb = ops.cb
-            [ cb, ops.cb ] = [ ops.cb, (err, data) -> cb err, data[0] ]
+            [ cb, ops.cb ] = [ ops.cb, (err, data) -> cb err, data?[0] ]
             @q ops
             
         count: (ops) ->
             cb = ops.cb
-            [ cb, ops.cb ] = [ ops.cb, (err, data) -> cb err, data[0][Object.keys(data[0])[0]] ]
+            [ cb, ops.cb ] = [ ops.cb, (err, data) -> cb err, data?[0][Object.keys(data?[0])[0]] ]
             @q ops
         
         begin: (cb) ->
