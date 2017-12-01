@@ -1,3 +1,9 @@
+## 2017-12-01 (3.1.0)
+
+* Updated dev deps
+* Updated node-mysql to 2.15.x
+* Retry failed queries when ER_LOCK_WAIT_TIMEOUT is thrown as well as ER_LOCK_DEADLOCK
+
 ## 2017-06-08 (3.0.3) 
 
 * Updated dev deps

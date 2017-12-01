@@ -40,7 +40,7 @@ module.exports = (settings) ->
         error: (err, cb) ->
             #deadlock, reissue query
             err.query = @lastQuery
-            if err.code is 'ER_LOCK_DEADLOCK' and @retries < @maxRetries
+            if err.code in ['ER_LOCK_DEADLOCK', 'ER_LOCK_WAIT_TIMEOUT'] and @retries < @maxRetries
                 @retries += 1
                 @emit 'deadlock', err
                 @hasTransaction = false

@@ -17,7 +17,7 @@ coffee:
 	$(COFFEE) -c -b $(TESTS_COFFEE)
 
 test: coffee
-	$(MOCHA) --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
+	$(MOCHA) --exit --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
 
 coverage: coffee
 	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(_MOCHA) -- --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
