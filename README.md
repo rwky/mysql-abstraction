@@ -1,4 +1,7 @@
-[![Dependency Status](https://gemnasium.com/rwky/mysql-abstraction.svg)](https://gemnasium.com/rwky/mysql-abstraction) [![NPM Version](https://img.shields.io/npm/v/mysql-abstraction.svg?style=flat)](https://www.npmjs.org/package/mysql-abstraction)
+[![Build Status](https://travis-ci.org/rwky/mysql-abstraction.svg?branch=master)](https://travis-ci.org/rwky/mysql-abstraction)
+[![Coverage Status](https://coveralls.io/repos/github/rwky/mysql-abstraction/badge.svg?branch=master)](https://coveralls.io/github/rwky/mysql-abstraction?branch=master)
+[![Dependencies](https://david-dm.org/rwky/mysql-abstraction.png)](https://david-dm.org/rwky/mysql-abstraction)
+<!--[![SAST](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)-->
 
 This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods and helps deal with transactions.
 
