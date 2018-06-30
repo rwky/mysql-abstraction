@@ -9,6 +9,7 @@ module.exports = (settings) ->
 
     connection: class Connection extends events.EventEmitter
         constructor: (@autoStartTransaction = false) ->
+            super()
             @gatherStats = true
             @log = false
             @logs = []

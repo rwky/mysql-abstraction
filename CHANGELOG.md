@@ -1,3 +1,9 @@
+## 2018-06-30 (4.0.0)
+
+* Updated deps, updated to coffeescript 2
+* Updated travis config
+* Updated README badges
+
 ## 2017-12-01 (3.1.0)
 
 * Updated dev deps
