@@ -1,10 +1,10 @@
 assert = require('chai').assert
 async = require 'async'
 mysql = require('../lib/index')({
-    user: process.env.MYSQL_USER, host: process.env.MYSQL_HOST,
-    password: process.env.MYSQL_PASSWORD, connectionLimit: 10,
+    user: process.env.MYSQL_USER or 'root', host: process.env.MYSQL_HOST or '127.0.0.1',
+    password: process.env.MYSQL_PASSWORD or '', connectionLimit: 10,
     database: 'mysql'
-    port: process.env.MYSQL_PORT
+    port: process.env.MYSQL_PORT or 3306
     })
 Connection = mysql.connection
 
