@@ -1,3 +1,7 @@
+## 2018-07-24 (4.1.0)
+
+* Updated deps, now supports Node 9 and 10
+
 ## 2018-06-30 (4.0.0)
 
 * Updated deps, updated to coffeescript 2
