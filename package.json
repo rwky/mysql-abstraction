@@ -29,7 +29,7 @@
     "url": "https://github.com/rwky/mysql-abstraction.git"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make coverage"
   },
   "license": "LGPL-3.0"
 }
