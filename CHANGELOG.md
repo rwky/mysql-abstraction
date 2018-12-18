@@ -1,3 +1,13 @@
+## 2018-12-18 (4.2.0)
+
+* Updated License to more permission LGPLv3
+* Updated deps
+* Added node 11 to travis
+* Added connection retrying. By default connections are retried 4 times every 500ms
+* Improved error handling when connections fail
+* Increased global tests timeout
+* Added utility script to run tests locally
+
 ## 2018-07-24 (4.1.0)
 
 * Updated deps, now supports Node 9 and 10

@@ -100,8 +100,7 @@ suite 'Query', ->
                 assert.equal data[0].k, 1
                 q.commit -> q.end done
     
-    test 'timeout', (done) =>
-        @timeout 20000
+    test 'timeout', (done) ->
         q =  new Connection
         q.on 'error', (err) -> null
         q.begin ->
@@ -210,8 +209,7 @@ suite 'Query', ->
                     assert.isNull err
                     q.end done
  
-    test 'deadlocks', (done) =>
-        @timeout 65000
+    test 'deadlocks', (done) ->
         q = new Connection true
         q2 = new Connection true
         deadlocks = 0
@@ -298,3 +296,62 @@ suite 'Query', ->
             cb: (err, data) ->
                 assert.equal data, null
                 done()
+   
+    test 'testNoReconnect', (done) ->
+        q = new Connection
+        q.on 'error', -> null
+        q.count
+            q: 'SELECT 1',
+            cb: (err, data) ->
+                assert.equal data, 1
+                assert.equal q.connectionAttempts, 1
+                done()
+   
+    test 'testReconnect', (done) ->
+        mysqlTmp = require('../lib/index')({
+            user: process.env.MYSQL_USER or 'root', host: process.env.MYSQL_HOST or '127.0.0.1',
+            password: process.env.MYSQL_PASSWORD or '', connectionLimit: 10,
+            database: 'mysql'
+            port: process.env.MYSQL_PORT or 3306
+        })
+        ConnectionTmp = mysqlTmp.connection
+        q = new Connection
+        q.q
+            q: 'SET GLOBAL max_connections = 1'
+            cb: ->
+                qTmp = new ConnectionTmp
+                qTmp.on 'error', -> null
+                setTimeout ->
+                    q.q
+                        q: 'SET GLOBAL max_connections = 1000'
+                        cb: -> q.end -> null
+                , 300
+                qTmp.count
+                    q: 'SELECT 1',
+                    cb: (err, data) ->
+                        assert.equal data, 1
+                        assert.equal qTmp.connectionAttempts, 2
+                        done()
+    
+    test 'testFailedReconnect', (done) ->
+        mysqlTmp = require('../lib/index')({
+            user: process.env.MYSQL_USER or 'root', host: process.env.MYSQL_HOST or '127.0.0.1',
+            password: process.env.MYSQL_PASSWORD or '', connectionLimit: 10,
+            database: 'mysql'
+            port: process.env.MYSQL_PORT or 3306
+        })
+        ConnectionTmp = mysqlTmp.connection
+        q = new Connection
+        q.q
+            q: 'SET GLOBAL max_connections = 1'
+            cb: ->
+                qTmp = new ConnectionTmp
+                qTmp.on 'error', -> null
+                qTmp.count
+                    q: 'SELECT 1',
+                    cb: (err, data) ->
+                        assert.equal qTmp.connectionAttempts, 4
+                        assert.equal err.code, 'ER_CON_COUNT_ERROR'
+                        q.q
+                            q: 'SET GLOBAL max_connections = 1000'
+                            cb: -> q.end done

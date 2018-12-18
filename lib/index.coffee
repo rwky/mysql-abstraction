@@ -14,6 +14,8 @@ module.exports = (settings) ->
             @log = false
             @logs = []
             @maxRetries = 3
+            @connectionRetries = 4
+            @connectionRetryInterval = 500
             @_reset()
                
         _reset: ->
@@ -23,6 +25,7 @@ module.exports = (settings) ->
             @_returnConnection = null
             @queries = []
             @retries = 0
+            @connectionAttempts = 0
             @lastQuery = null
             @lastOps = null
             @stats =
@@ -32,10 +35,19 @@ module.exports = (settings) ->
                 insert: 0
                  
         connect: (cb) ->
+            @connectionAttempts += 1
             @_returnConnection = (err, connection) =>
-                @connection = connection
-                if err then @emit 'error', err
-                cb(err)
+                if err
+                    if @connectionAttempts >= @connectionRetries
+                        @emit 'error', err
+                        cb err
+                    else
+                        setTimeout =>
+                            @connect cb
+                        , @connectionRetryInterval
+                else
+                    @connection = connection
+                    cb(err)
             pool.getConnection @_returnConnection
             
         error: (err, cb) ->
@@ -68,10 +80,10 @@ module.exports = (settings) ->
             if @log
                 @logs.push ops
             @lastOps = ops
+            ops.cb = ops.cb or ops.callback
+            ops.values = ops.values or ops.params or []
+            ops.sql = ops.sql or ops.q
             query = =>
-                ops.cb = ops.cb or ops.callback
-                ops.values = ops.values or ops.params or []
-                ops.sql = ops.sql or ops.q
                 ###
                 #This is crude and doesn't support complex queries i.e. UPDATE .... SELECT
                 #But it does the job for most cases
@@ -110,12 +122,14 @@ module.exports = (settings) ->
                             ops.cb null, data
             run = =>
                 if not @hasTransaction and (@autoStartTransaction or ops.lock?)
-                    @begin ->
+                    @begin (err) ->
+                        if err then return ops.cb err
                         query()
                 else
                     query()
             unless @connection?
-                @connect ->
+                @connect (err) ->
+                    if err then return ops.cb err
                     run()
             else
                 run()

@@ -1,7 +1,6 @@
 
 COFFEE ?= ./node_modules/.bin/coffee
-MOCHA ?= node_modules/.bin/_mocha
-_MOCHA ?= ./node_modules/.bin/_mocha
+MOCHA ?= ./node_modules/.bin/_mocha
 MOCHA_REPORTER ?= spec
 ISTANBUL ?= ./node_modules/.bin/istanbul
 ISTANBUL_OUT ?= ./reports/coverage
@@ -17,10 +16,10 @@ coffee:
 	$(COFFEE) -c -b $(TESTS_COFFEE)
 
 test: coffee
-	$(MOCHA) --exit --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
+	$(MOCHA) --exit --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS) --timeout 5000
 
 coverage: coffee
-	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(_MOCHA) -- --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS)
+	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(MOCHA) -- --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS) --timeout 5000
 	
 lint:
 	$(COFFEELINT) -f coffeelint.json lib/*.coffee tests/*.coffee
