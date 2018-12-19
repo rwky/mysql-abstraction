@@ -19,7 +19,7 @@ test: coffee
 	$(MOCHA) --exit --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS) --timeout 5000
 
 coverage: coffee
-	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(MOCHA) -- --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS) --timeout 5000
+	$(ISTANBUL) cover --dir $(ISTANBUL_OUT) --report $(ISTANBUL_REPORT) $(MOCHA) -- --exit --reporter $(MOCHA_REPORTER) --ui tdd $(TESTS) --timeout 5000
 	
 lint:
 	$(COFFEELINT) -f coffeelint.json lib/*.coffee tests/*.coffee
