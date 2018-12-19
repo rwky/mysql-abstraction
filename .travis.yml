@@ -6,3 +6,5 @@ node_js:
     - "11"
 services:
     - mysql
+script:
+  - "make coveralls"

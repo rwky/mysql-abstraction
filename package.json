@@ -12,8 +12,8 @@
     "node": ">=6.0"
   },
   "dependencies": {
-    "mysql": "2.16.x",
-    "async": "2.6.x"
+    "async": "2.6.x",
+    "mysql": "2.16.x"
   },
   "main": "lib/index",
   "devDependencies": {
@@ -21,6 +21,7 @@
     "coffeelint": "2.1.x",
     "coffeelint-variable-scope": "0.0.x",
     "coffeescript": "^2.3.2",
+    "coveralls": "3.0.x",
     "istanbul": "0.4.x",
     "mocha": "5.2.x"
   },
