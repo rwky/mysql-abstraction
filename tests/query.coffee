@@ -9,7 +9,7 @@ mysql = require('../lib/index')({
 Connection = mysql.connection
 
 suite 'Query', ->
-    before (done) ->
+    suiteSetup (done) ->
         q = new Connection
         async.series [
             (c) -> q.q q: 'CREATE DATABASE IF NOT EXISTS test', cb: c

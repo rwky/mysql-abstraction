@@ -1,3 +1,7 @@
+## 2018-05-02 (4.3.0)
+
+* Updated npm deps
+
 ## 2018-12-18 (4.2.0)
 
 * Updated License to more permission LGPLv3
