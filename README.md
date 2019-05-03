@@ -3,7 +3,7 @@
 [![Dependencies](https://david-dm.org/rwky/mysql-abstraction.png)](https://david-dm.org/rwky/mysql-abstraction)
 <!--[![SAST](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)-->
 
-This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods and helps deal with transactions.
+This is an abstraction layer built on https://github.com/felixge/node-mysql it adds various helper methods and helps deal with transactions.
 
 Example usage:
 ```js
