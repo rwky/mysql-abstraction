@@ -17,7 +17,7 @@ mysql = require('../lib/index')({
 Connection = mysql.connection;
 
 suite('Query', function() {
-  setup(function(done) {
+  suiteSetup(function(done) {
     var q;
     q = new Connection;
     return async.series([

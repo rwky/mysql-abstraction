@@ -1,3 +1,7 @@
+## 2019-07-16 (4.3.1)
+
+* Updated npm deps
+
 ## 2018-05-02 (4.3.0)
 
 * Updated npm deps
