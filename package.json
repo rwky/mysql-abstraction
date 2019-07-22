@@ -21,8 +21,8 @@
     "@types/mocha": "^5.2.6",
     "@types/mysql": "^2.15.6",
     "coveralls": "^3.0.3",
-    "istanbul": "0.4.x",
-    "mocha": "6.1.x",
+    "nyc": "14.1.x",
+    "mocha": "6.2.x",
     "typescript": "^3.4.5"
   },
   "repository": {
@@ -32,7 +32,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "test": "test"
+    "test": "mocha --exit --reporter spec --ui tdd tests/*.js --timeout 5000",
+    "coverage": "nyc npm run test"
   },
   "license": "LGPL-3.0"
 }
