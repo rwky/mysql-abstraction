@@ -1,3 +1,9 @@
+## 2020-05-15 (5.0.0)
+
+* Added promises support
+* Updated npm deps
+* Converted to vanilla js thanks to https://www.npmjs.com/package/decaffeinate
+
 ## 2019-12-30 (4.3.2) 
 
 * Updated npm deps

@@ -1,9 +1,8 @@
 [![Build Status](https://travis-ci.org/rwky/mysql-abstraction.svg?branch=master)](https://travis-ci.org/rwky/mysql-abstraction)
 [![Coverage Status](https://coveralls.io/repos/github/rwky/mysql-abstraction/badge.svg?branch=master)](https://coveralls.io/github/rwky/mysql-abstraction?branch=master)
 [![Dependencies](https://david-dm.org/rwky/mysql-abstraction.png)](https://david-dm.org/rwky/mysql-abstraction)
-<!--[![SAST](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)](https://gitlab.com/rwky/mysql-abstraction-strategy/badges/master/build.svg)-->
 
-This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods and helps deal with transactions.
+This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods, helps deal with transactions and supports promises.
 
 Example usage:
 ```js
@@ -41,9 +40,32 @@ q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
     console.log(data);
 } })
 
+// using promises
+q = new Connection();
+q.count({ q:'SELECT count(*) FROM table' }).then((data) => {
+    // do something with data
+}).catch((err) => {
+    // do something with error
+})
+
+// using async/await
+
+async function getCount() {
+    try {
+        q = new Connection();
+        const data = await q.count({ q:'SELECT count(*) FROM table' })
+        // do something with data
+    } catch (err) {
+        // do something with err
+    }
+}
+
+getCount()
+
+
 ```
 
-See tests/query.coffee for more usage examples
+See tests/ for more usage examples
 
 Note when deadlocks are automatically rolled back and queries are reissued any autoincrement columns aren't reverted, see http://stackoverflow.com/questions/14758625/mysql-auto-increment-columns-on-transaction-commit-and-rollback for more details
 
