@@ -1,3 +1,7 @@
+## 2020-07-16 (5.0.1)
+
+* Updated npm deps
+
 ## 2020-05-15 (5.0.0)
 
 * Added promises support
