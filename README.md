@@ -15,10 +15,8 @@ mysql = require('mysql-abstraction')({
   connectionLimit: 100
 });
 
-Connection = mysql.connection;
-
 //select then update using a transaction
-q = new Connection(true);
+q = new mysql.Connection(true);
 q.q({ q:'SELECT something FROM table WHERE id=?',params:[1],lock:1,cb: function(err,data){
     //do something with data
     q.q( { q:'UPDATE table SET something=? WHERE id=?',params:['something else',1],function(){
@@ -27,21 +25,21 @@ q.q({ q:'SELECT something FROM table WHERE id=?',params:[1],lock:1,cb: function(
 } })
 
 //count the number of rows
-q = new Connection();
+q = new mysql.Connection();
 q.count({ q:'SELECT count(*) FROM table',cb: function(err,data){
     //do something with data
     console.log(data);
 } })
 
 //fetch the first row
-q = new Connection();
+q = new mysql.Connection();
 q.row({ q:'SELECT something FROM table WHERE id=1',cb: function(err,data){
     //do something with data
     console.log(data);
 } })
 
 // using promises
-q = new Connection();
+q = new mysql.Connection();
 q.count({ q:'SELECT count(*) FROM table' }).then((data) => {
     // do something with data
 }).catch((err) => {
@@ -52,7 +50,7 @@ q.count({ q:'SELECT count(*) FROM table' }).then((data) => {
 
 async function getCount() {
     try {
-        q = new Connection();
+        q = new mysql.Connection();
         const data = await q.count({ q:'SELECT count(*) FROM table' })
         // do something with data
     } catch (err) {

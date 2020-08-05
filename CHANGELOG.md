@@ -1,3 +1,9 @@
+## 2020-08-05 (5.1.0)
+
+* Fixed regression created in 5.0.0 where multiple includes of the module would only accept one set of settings
+* Export Connection as well as connection so new Connection can be used to match eslint standards
+* Updated npm deps
+
 ## 2020-07-16 (5.0.1)
 
 * Updated npm deps
