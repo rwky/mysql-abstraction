@@ -1,3 +1,7 @@
+## 2021-04-06 (5.1.1)
+
+* Patched security vulnerability in NPM deps https://www.npmjs.com/advisories/1654
+*
 ## 2020-08-05 (5.1.0)
 
 * Fixed regression created in 5.0.0 where multiple includes of the module would only accept one set of settings
