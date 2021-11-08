@@ -1,3 +1,9 @@
+## 2021-11-08 (5.1.3)
+
+* Fixed issue where transaction would be marked as inactive before COMMIT is called which
+caused an extra START TRANSACTION call
+* Updated npm deps
+
 ## 2021-08-12 (5.1.2) 
 
 * Updated NPM deps
