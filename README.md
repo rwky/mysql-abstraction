@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/rwky/mysql-abstraction.svg?branch=master)](https://travis-ci.org/rwky/mysql-abstraction)
+[![Build Status](https://app.travis-ci.com/rwky/mysql-abstraction.svg?branch=master)](https://app.travis-ci.com/rwky/mysql-abstraction)
 [![Coverage Status](https://coveralls.io/repos/github/rwky/mysql-abstraction/badge.svg?branch=master)](https://coveralls.io/github/rwky/mysql-abstraction?branch=master)
 
 This is an abstraction layer built on https://github.com/felixge/node-mysql it add's various helper methods, helps deal with transactions and supports promises.
