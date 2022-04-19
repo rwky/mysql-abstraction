@@ -2,7 +2,7 @@
   "author": "Rowan Wookey <admin@rwky.net> (https://www.rwky.net)",
   "name": "mysql-abstraction",
   "description": "Abstraction layer on top of Felix G's mysql driver",
-  "version": "5.1.4",
+  "version": "5.1.5",
   "keywords": "mysql",
   "homepage": "https://github.com/rwky/mysql-abstraction",
   "bugs": {

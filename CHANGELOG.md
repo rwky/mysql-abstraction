@@ -1,3 +1,13 @@
+## 2022-04-19 (5.1.5)
+
+* Updated NPM deps
+
+## 2022-02-22 (5.1.4)
+
+* Updated NPM deps
+* Added node 17
+* Lint fixes
+
 ## 2021-11-08 (5.1.3)
 
 * Fixed issue where transaction would be marked as inactive before COMMIT is called which
