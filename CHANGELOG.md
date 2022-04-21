@@ -1,3 +1,7 @@
+## 2022-04-21 (5.1.6)
+
+* Call this._reset() when there is an error, clearing hasTransaction etc.
+
 ## 2022-04-19 (5.1.5)
 
 * Updated NPM deps
