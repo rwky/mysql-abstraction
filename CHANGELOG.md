@@ -1,3 +1,7 @@
+## 2023-01-02 (5.1.7)
+
+* Updated NP deps
+
 ## 2022-04-21 (5.1.6)
 
 * Call this._reset() when there is an error, clearing hasTransaction etc.
